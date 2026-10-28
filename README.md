@@ -89,6 +89,8 @@ python -m sixth.check_foundry # one comment, with the tool calls and the verifie
 python -m sixth.run --seed 4 --narrator foundry --limit 3   # three moments
 python -m sixth.run --seed 4 --narrator foundry             # the full match
 ```
+## Video
+https://media.rockafellowlabs.com/SixthOfficial.mp4
 
 ## The replay page
 
