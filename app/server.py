@@ -6,7 +6,8 @@
 It serves the page (app/web/) and the match files (data/*.json). It calls no model: the judges'
 site replays matches that were narrated beforehand, so testing it costs nothing.
 
-/api/tracking?seed=N gives the 1 Hz positions of the ball and all 22 players for match seed N,
+/api/tracking?seed=N gives the 1 Hz positions of the ball and all 22 players for match seed N
+(only seeds of the matches in data/),
 made again from the seed by the generator (it is deterministic), for the "All players" view.
 """
 import gzip
@@ -140,6 +141,29 @@ def movement(rows, order) -> dict:
     return out
 
 
+@lru_cache(maxsize=8)
+def _seeds_of(files: tuple) -> frozenset:
+    out = set()
+    for name, _mtime in files:
+        try:
+            seed = json.loads((DATA / name).read_text(encoding="utf-8")).get("seed")
+        except (OSError, ValueError):
+            seed = None
+        if not isinstance(seed, int):   # no seed field: take it from the name, match-<seed>-<kind>.json
+            part = name.split("-")[1] if name.count("-") >= 1 else ""
+            seed = int(part) if part.isdigit() else None
+        if seed is not None:
+            out.add(seed)
+    return frozenset(out)
+
+
+def published_seeds() -> frozenset:
+    """Seeds of the narrated matches in data/. Added 2026-10-27: tracking is made only for these,
+    so a stranger cannot make the server generate matches for any seed (CPU and memory)."""
+    files = tuple(sorted((p.name, p.stat().st_mtime) for p in DATA.glob("match-*.json")))
+    return _seeds_of(files)
+
+
 def matches() -> list[str]:
     """Narrated matches, the Foundry ones first, newest first."""
     files = sorted(DATA.glob("match-*.json"), key=lambda p: ("foundry" not in p.name, -p.stat().st_mtime))
@@ -184,6 +208,9 @@ class Handler(SimpleHTTPRequestHandler):
             raw = parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "").get("seed", [""])[0]
             if not raw.isdigit() or int(raw) > 1_000_000:
                 self.send_error(400, "seed must be a whole number")
+                return
+            if int(raw) not in published_seeds():
+                self.send_error(404, "no published match has this seed")
                 return
             body = tracking(int(raw))
             if "gzip" in self.headers.get("Accept-Encoding", ""):

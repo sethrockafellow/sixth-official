@@ -63,7 +63,7 @@ def test_tracking_refuses_a_bad_seed(base):
 def test_page_files_served_with_their_types(base):
     """The glossary, the open fonts and three.js (the player camera) are served with the right types."""
     for path, kind in (("/glossary.html", "text/html"), ("/cam.js", "text/javascript"),
-                       ("/fonts/barlow-latin-400-normal.woff2", "font/woff2"),
+                       ("/fonts/atkinson-hyperlegible-latin-400-normal.woff2", "font/woff2"),
                        ("/vendor/three.min.js", "text/javascript")):
         with urllib.request.urlopen(base + path) as r:
             assert r.status == 200 and r.headers["Content-Type"].startswith(kind), path
@@ -78,3 +78,12 @@ def test_touches_follow_the_events(base):
     assert all(a[0] <= b[0] for a, b in zip(t, t[1:]))
     assert all(-1 <= k[3] < len(d["players"]) for k in t)
     assert all(0.0 <= k[1] <= 105.0 and 0.0 <= k[2] <= 68.0 for k in t)
+
+
+def test_tracking_only_for_published_seeds(base):
+    """Added 2026-10-27: a seed with no match in data/ gets 404, so the server makes no new match."""
+    try:
+        urllib.request.urlopen(base + "/api/tracking?seed=999")
+        assert False, "seed 999 should be refused"
+    except urllib.error.HTTPError as e:
+        assert e.code == 404

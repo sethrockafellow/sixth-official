@@ -2,7 +2,7 @@
 // made from the same 1 Hz tracking the pitch uses, and in step with the replay clock.
 //
 //   - Players are capsules in their kit colors with their shirt number above them; the officials
-//     are yellow. The ball is drawn at its height from the flights (ballZ in app.js).
+//     are in black, with a yellow badge. The ball is drawn at its height from the flights (ballZ in app.js).
 //   - By default the head follows the ball. Hold the middle mouse button (or the left button) and
 //     move the mouse to turn the head; the turn stays until "Look at the ball". The arrow keys do
 //     the same when the view has focus. The mouse wheel zooms (field of view), and never scrolls
@@ -40,7 +40,7 @@ window.makeCam = (D) => {
     const c = document.createElement('canvas'); c.width = c.height = 64;
     const g = c.getContext('2d');
     g.fillStyle = bg; g.beginPath(); g.arc(32, 32, 30, 0, Math.PI * 2); g.fill();
-    g.fillStyle = fg; g.font = '800 34px "Barlow Condensed", "Arial Narrow", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillStyle = fg; g.font = '700 32px "Atkinson Hyperlegible", "Segoe UI", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
     g.fillText(text, 32, 34);
     const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false }));
     sp.scale.set(0.55, 0.55, 1); return sp;
@@ -83,7 +83,7 @@ window.makeCam = (D) => {
       const n = new THREE.Mesh(new THREE.PlaneGeometry(7.32, 2.44), net); n.rotation.y = Math.PI / 2; n.position.set(X(gx) + back, 1.22, 0); scene.add(n);
     }
     // A plain stadium for a sense of place: advertising boards with a lime edge, then four stands.
-    const board = new THREE.MeshLambertMaterial({ color: '#1a1726' }), edge = new THREE.MeshBasicMaterial({ color: '#c6f432' });
+    const board = new THREE.MeshLambertMaterial({ color: '#121417' }), edge = new THREE.MeshBasicMaterial({ color: '#ffd400' });
     const stand = new THREE.MeshLambertMaterial({ color: '#262b3d' });
     for (const sgn of [-1, 1]) {
       const b1 = new THREE.Mesh(new THREE.BoxGeometry(111, 0.9, 0.12), board); b1.position.set(0, 0.45, sgn * 38); scene.add(b1);
@@ -98,7 +98,7 @@ window.makeCam = (D) => {
     // A figure: a group at the feet, so it can face where it runs, lean into a run and bob with
     // each stride. The capsule is the body; a darker band at the front of the head shows which
     // way he faces; the shorts are a darker band at the hips.
-    const shade = new THREE.MeshLambertMaterial({ color: '#15121f' });
+    const shade = new THREE.MeshLambertMaterial({ color: '#0c0d0f' });
     function figure(color, r, len) {
       const g = new THREE.Group(), mat = new THREE.MeshLambertMaterial({ color });
       const body = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 4, 14), mat); body.position.y = len / 2 + r; g.add(body);
@@ -113,8 +113,8 @@ window.makeCam = (D) => {
       scene.add(tag); return { body: f.g, mat: f.mat, tag, id: p.id, yaw: 0, phase: 0, v: [0, 0], px: null, py: null };
     });
     const officials = (T.officials || []).map((o) => {
-      const f = figure(new THREE.Color('#e8d23a'), 0.31, 1.12);
-      const tag = label(OFFICIAL_MARK[o.id] || '?', '#e8d23a', '#0e0c16');
+      const f = figure(new THREE.Color('#1a1b1f'), 0.31, 1.12);          // the officials in black
+      const tag = label(OFFICIAL_MARK[o.id] || '?', '#ffd400', '#0c0d0f');
       scene.add(tag); return { body: f.g, mat: f.mat, tag, id: o.id, yaw: 0, phase: 0, v: [0, 0], px: null, py: null };
     });
     const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_R, 20, 14), new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#555555' }));

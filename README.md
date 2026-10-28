@@ -1,10 +1,11 @@
 # Sixth Official
 
 **Match commentary that checks its own facts.** Sixth Official turns a synthetic football match into
-short, personalized comments for each viewer, written by an AI agent on Microsoft Foundry. Every
-number and label in a comment is checked against the match data before it airs. A comment that
+short, personalized comments for each viewer, written by an AI agent on Microsoft Foundry. Each
+number and label the agent cites is checked against the match data before it airs. A comment that
 fails goes back to the agent once with the list of failures; if it fails again, a plain template
-sentence airs instead. Nothing reaches the screen that the data cannot back.
+sentence airs instead. The checks are on cited numbers and labels, not on the meaning of every
+word: see [Known limitations](#known-limitations).
 
 **Live site:** https://sixth-official.niceriver-a2594222.eastus2.azurecontainerapps.io/ (Azure Container Apps)
 
@@ -44,6 +45,29 @@ Every claim in a comment has an evidence item: the exact words, a source path in
 
 `tests/test_verifier.py` plants each of these errors into good comments and checks that it is stopped.
 
+What the verifier does **not** check: the words around a number (who did it, which team, the unit
+and the period). It trusts the agent to cite the right source for the subject of the sentence.
+
+## Known limitations
+
+- **One number per claim.** The verifier compares the first number in each claim with its source.
+  If a claim holds a second number, that second number is not compared with anything.
+- **Subject and unit come from the agent.** "Copper Vale have 0.9 xG" passes if the cited value is
+  0.9, even if the source is Larkspur's xG. The tools show the agent the team and player names
+  for each source, but the verifier does not compare them with the sentence.
+- **The bundled Foundry match was narrated before the 2026-10-27 verifier fix.** Before the fix, a
+  source path to a field that did not exist passed without a value check, and a measured change
+  (a delta) from later in the match was not stopped. Those comments have not been checked again
+  with the fixed verifier; new runs use it.
+- **The "unusual" findings are tested again at every pause.** Each test is corrected for the 8
+  things checked at one pause (Bonferroni), not for looking again and again through the match. Over
+  a whole match, some "unusual" cards are expected by chance. See `docs/METRICS.md`, section on
+  dead-ball findings.
+- **Synthetic data.** The players and the play are generated from averages; at 1x in the player
+  camera the movement can look unnatural.
+- **Engineering.** No lockfile (the versions in `requirements.txt` are minimums); the page script
+  `app/web/app.js` is one large file; some tests compare against saved numbers from one seed.
+
 ## Run it
 
 Requires Python 3.11 or later.
@@ -74,7 +98,7 @@ python -m app.server          # then open http://localhost:8000
 
 It replays a narrated match from `data/`: the scoreboard, the pitch, the win chances over time
 (the future stays dimmed), and the match log with the three viewers' comments side by side.
-Click any comment to see every fact behind it, its source and stored value, the tools the agent
+Click any comment to see each cited fact behind it, its source and stored value, the tools the agent
 called, and any draft the verifier stopped, with the reason. English and Spanish.
 
 The site calls no model: matches are narrated beforehand with `python -m sixth.run`, so testing it
@@ -133,5 +157,6 @@ MIT
 
 ## Third-party files in the page
 
-- Barlow and Barlow Condensed fonts (`app/web/fonts`), SIL Open Font License 1.1 (`OFL-Barlow.txt`).
+- Atkinson Hyperlegible (Braille Institute) and Doto fonts (`app/web/fonts`), SIL Open Font License 1.1
+  (`OFL-Atkinson-Hyperlegible.txt`, `OFL-Doto.txt`).
 - three.js r149 (`app/web/vendor/three.min.js`), MIT License (`three-LICENSE.txt`), for the player camera.

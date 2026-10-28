@@ -1,4 +1,4 @@
-# Metrics: what each number means, and why it can be trusted
+# Metrics: what each number means, and how it is worked out
 
 Every number on the page and in a comment comes from the engine (`sixth/engine.py`,
 `sixth/metrics.py`, `sixth/winmodel.py`, `sixth/insights.py`). The narrator only cites them, and
@@ -100,11 +100,12 @@ tests, four for each team:
 Each test needs enough data: at least 6 events in the 5 minutes and 20 before; findings start
 after 10 minutes, and the shots test after 15 minutes with at least 3 earlier shots.
 
-**Why "unusual" can be trusted.** Each p-value is the chance of a change at least this large if
+**How "unusual" is decided.** Each p-value is the chance of a change at least this large if
 nothing had really changed. Because 8 things are checked at every pause, the smallest p-value is
 multiplied by 8 (the Bonferroni correction). "Unusual" means that corrected value is below 0.05.
-The card says "about 1 time in N" with N = 1 / corrected p-value, at least 20. If nothing passes,
-the card shows the biggest change and says it is within normal variation.
+If nothing passes, the card shows the biggest change and says it is within normal variation.
+The correction is for one pause only. The page tests again at every pause, so over a whole match
+some "unusual" cards are expected by chance alone.
 
 **Limits.** Events in a match are not fully independent (one long spell of pressure makes many
 duels), so the exact tests are a little too generous. Bonferroni partly offsets this. In this

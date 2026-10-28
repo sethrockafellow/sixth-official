@@ -1,7 +1,7 @@
 """winmodel.py: home win, draw and away win chances at any moment of a match.
 
 Fitted and tested on 6,080 real Premier League matches (scripts/fit_win_model.py; the numbers
-are in sixth/win_model.json and docs/WIN_MODEL.md). How it works:
+are in sixth/win_model.json and docs/METRICS.md). How it works:
 
   scoring rates   each club's goals per match before kick-off, from the two Elo ratings
   timing          a share s1 of goals come in the first half; inside a half the rate is flat

@@ -90,7 +90,7 @@ const TXT = {
           'While the ball is out of play, a card shows what the restart could change, and whether anything unusual happened in the last 5 minutes.']],
         ['The commentary', [
           'Each row of the log is one moment, told three ways: for an analyst, a home fan and a fan who follows one player. An empty cell means that viewer was not told anything.',
-          'Click a comment to see every fact behind it, where it came from, the tools the AI called and what the fact check stopped.',
+          'Click a comment to see each cited fact behind it, where it came from, the tools the AI called and what the fact check stopped.',
           'Corrected on retry: the first draft failed a check and the AI fixed it. Template: it failed twice, so a plain sentence aired.']],
       ] },
     hints: {
@@ -115,7 +115,7 @@ const TXT = {
       metric: { duels: (c) => `${c}: duels won`, passing: (c) => `${c}: passes completed`, territory: (c) => `${c}: share of final-third passes`, shots: (c) => `${c}: shots` },
       now: 'Last 5 min', before: 'Before', nowShort: 'Now', of: (k, n) => `${k} of ${n}`,
       shotsLine: (k, e) => `${k} in the last 5 minutes. At their earlier rate, about ${e} would be normal.`,
-      unusual: (n) => `Unusual: a change this big happens by chance about 1 time in ${n}, allowing for the 8 things checked.`,
+      unusual: () => 'Unusual: a change this big is rare by chance alone, allowing for the 8 things checked at this pause.',
       normal: 'Within normal variation: a change this size often happens by chance.',
       none: 'Too early in the match to compare: findings start after 10 minutes.' },
     stats: { tilt: 'Field tilt', ppda: 'PPDA, lower is a harder press', duels: 'Duels won', xg: 'xG, whole match' },
@@ -242,7 +242,7 @@ const TXT = {
       metric: { duels: (c) => `${c}: duelos ganados`, passing: (c) => `${c}: pases completados`, territory: (c) => `${c}: parte de los pases en el último tercio`, shots: (c) => `${c}: disparos` },
       now: 'Últimos 5 min', before: 'Antes', nowShort: 'Ahora', of: (k, n) => `${k} de ${n}`,
       shotsLine: (k, e) => `${k} en los últimos 5 minutos. A su ritmo anterior, lo normal serían unos ${e}.`,
-      unusual: (n) => `Inusual: un cambio así ocurre por azar 1 vez de cada ${n}, contando las 8 cosas comprobadas.`,
+      unusual: () => 'Inusual: un cambio así es raro por puro azar, contando las 8 cosas comprobadas en esta pausa.',
       normal: 'Variación normal: un cambio así ocurre a menudo por azar.',
       none: 'Demasiado pronto para comparar: los datos empiezan a los 10 minutos.' },
     stats: { tilt: 'Dominio territorial', ppda: 'PPDA, menos es más presión', duels: 'Duelos ganados', xg: 'xG, todo el partido' },
@@ -593,7 +593,7 @@ function buildPlayers() {
   g.append(ring, shadow, stalk, ball, zText, recvRing);
   const officials = (T.officials || []).map((o) => {
     const d = sv('g', {});
-    const r = sv('rect', { width: 2.6, height: 2.6, fill: 'var(--ink)' });
+    const r = sv('rect', { width: 2.6, height: 2.6, fill: 'var(--accent)' });   // officials: a yellow badge
     const t = sv('text', { 'font-size': 1.7, 'text-anchor': 'middle', 'dominant-baseline': 'central', fill: 'var(--paper)', 'font-family': 'var(--mono)', 'font-weight': 700 });
     t.textContent = OFFICIAL_MARK[o.id] || '?'; d.append(r, t); g.append(d);
     return { r, t };
@@ -1137,7 +1137,7 @@ function drawDead(nowMs) {
     if (f.metric === 'shots') kids.push(el('p', {}, D.shotsLine(f.now_k, num1(f.expected))));
     else kids.push(el('div', { class: 'bars' }, ...barRow(D.now, f.now_rate, `${pct(f.now_rate)}% (${D.of(f.now_k, f.now_n)})`, f.team),
       ...barRow(D.before, f.before_rate, `${pct(f.before_rate)}% (${D.of(f.before_k, f.before_n)})`, 'before')));
-    kids.push(f.significant ? el('p', { class: 'verdict' }, D.unusual(Math.max(20, Math.round(1 / Math.max(f.p_adj, 1e-4)))))
+    kids.push(f.significant ? el('p', { class: 'verdict' }, D.unusual())
       : el('p', { class: 'verdict plain' }, D.normal));
   }
   box.replaceChildren(...kids);
@@ -1428,13 +1428,13 @@ function openDrawer(m, pid) {
   const quote = textWithClaims(o); quote.className = 'quote';
   const kids = [el('h3', { id: 'drawer-title' }, `${personaLabel(pid)}, ${minLabel(slot.air)}`),
     el('p', { class: `status ${o.status}` }, `${TXT[S.lang].status[o.status]}. ${d.what}, ${d.who}.`), quote];
-  const what = { verified: es ? 'El verificador comprobó cada dato a la primera.' : 'The verifier checked every fact on the first try.',
+  const what = { verified: es ? 'El verificador comprobó cada dato citado a la primera.' : 'The verifier checked each cited fact on the first try.',
     verified_on_retry: es ? 'El primer borrador falló; el agente lo corrigió con la lista de fallos.' : 'The first draft failed. The agent fixed it from the list of failures.',
     fallback: es ? 'El agente falló dos veces: salió una frase de plantilla, rellenada solo con datos guardados.' : 'The agent failed twice. A template sentence aired instead, filled only from stored data.' };
   kids.push(el('p', { class: 'note' }, what[o.status] || ''));
-  kids.push(el('h4', {}, es ? 'Cada dato y su fuente' : 'Every fact and its source'));
+  kids.push(el('h4', {}, es ? 'Cada dato citado y su fuente' : 'Each cited fact and its source'));
   const tb = el('tbody');
-  for (const e of o.evidence) tb.append(el('tr', {}, el('td', {}, e.claim), el('td', { class: 'mono' }, e.source), el('td', { class: 'mono' }, String(e.value)), el('td', { class: 'ok' }, es ? 'comprobado' : 'checked')));
+  for (const e of o.evidence) tb.append(el('tr', {}, el('td', {}, e.claim), el('td', { class: 'mono' }, e.source), el('td', { class: 'mono' }, String(e.value)), el('td', { class: 'ok' }, es ? 'citado' : 'cited')));
   kids.push(el('table', { class: 'ev' }, el('thead', {}, el('tr', {}, el('th', { text: es ? 'Dato' : 'Claim' }), el('th', { text: es ? 'Fuente' : 'Source' }), el('th', { text: es ? 'Valor guardado' : 'Stored value' }), el('th', {}, el('span', { class: 'sr-only' }, es ? 'Resultado' : 'Result')))), tb));
   const stopped = c.tries.filter((t) => !t.passed);
   if (stopped.length) {

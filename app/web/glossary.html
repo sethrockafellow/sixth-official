@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sixth Official: glossary</title>
 <meta name="description" content="What each term on the Sixth Official page means: win chance, xG, PPDA, duels, field tilt and more.">
-<meta name="theme-color" content="#0e0c16">
+<meta name="theme-color" content="#0c0d0f">
 <link rel="stylesheet" href="app.css">
 <style>
   .gl{max-width:52rem;margin:0 auto;padding:1.6rem 1.6rem 3rem}
   .gl .back{font-size:14px}
-  .gl h1{font:800 2.4rem/1.05 var(--cond);letter-spacing:.02em;margin:1rem 0 .4rem}
+  .gl h1{font:700 2.2rem/1.1 var(--ui);letter-spacing:.04em;margin:1rem 0 .4rem}
   .gl .lede{color:var(--muted);max-width:65ch;margin-bottom:1rem}
-  .gl nav.toc{display:flex;flex-wrap:wrap;gap:.3rem .9rem;font:600 15px/1.4 var(--cond);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .5rem}
+  .gl nav.toc{display:flex;flex-wrap:wrap;gap:.3rem .9rem;font:700 13.5px/1.4 var(--ui);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .5rem}
   .gl nav.toc a{color:var(--muted);text-decoration:none;border-bottom:2px solid transparent}
   .gl nav.toc a:hover{color:var(--ink);border-bottom-color:var(--accent)}
-  .gl h2{font:700 1.3rem/1.2 var(--cond);text-transform:uppercase;letter-spacing:.08em;margin:2.2rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--rule-mid)}
-  .gl h2::before{content:"";display:inline-block;width:.35rem;height:1rem;background:var(--accent);margin-right:.5rem;vertical-align:-.1rem}
+  .gl h2{font:700 1.1rem/1.2 var(--ui);text-transform:uppercase;letter-spacing:.08em;margin:2.2rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--rule-mid)}
+  .gl h2::before{content:"";display:inline-block;width:.55rem;height:.8rem;background:var(--accent);transform:rotate(-10deg);margin-right:.6rem;vertical-align:-.05rem}
   .gl dl{margin:0}
-  .gl dt{font:700 1.15rem/1.3 var(--cond);letter-spacing:.03em;margin-top:1.1rem;scroll-margin-top:1rem}
+  .gl dt{font:700 1.08rem/1.3 var(--ui);letter-spacing:.03em;margin-top:1.1rem;scroll-margin-top:1rem}
   .gl dd{margin:.2rem 0 0;max-width:65ch;line-height:1.5}
   .gl dd .how{display:block;color:var(--muted);font-size:14px;margin-top:.25rem}
   .gl dt:target{color:var(--accent)}
@@ -137,7 +137,7 @@
 <dt id="agent">Narrator agent</dt>
 <dd>A Microsoft Foundry model, run with Microsoft Agent Framework, that writes each comment. It calls tools for the facts and cites each fact with its source.</dd>
 <dt id="verifier">Verifier</dt>
-<dd>Code that checks every claim before it airs: each number against its stored value, each label against its number, and that no source comes from later in the match. It also stops numbers with no source and "because" with no measured change.</dd>
+<dd>Code that checks each cited claim before it airs: each number against its stored value, each label against its number, and that no source comes from later in the match. It also stops numbers with no source and "because" with no measured change. It does not check the words around a number (which team, which player): it trusts the agent to cite the right source.</dd>
 <dt id="retry">Passed first time, corrected on retry, template</dt>
 <dd>A comment that fails goes back to the agent once with the list of failures. If it passes then, it is "corrected on retry". If it fails again, a plain template sentence airs instead.</dd>
 <dt id="personas">Viewers (personas)</dt>

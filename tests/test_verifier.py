@@ -136,3 +136,35 @@ def test_an_analyst_comment_with_a_decimal_passes(world):
     out.evidence.append(EvidenceItem(claim=claim, source=f"{sid}.home.momentum", value=mom, unit="index"))
     r = check(world, out, t)
     assert r.passed, [f.detail for f in r.failures]
+
+
+def test_a_field_that_does_not_exist(world):
+    """Added 2026-10-27: a source path to a missing field must fail, not pass unchecked."""
+    t, out = good(world)
+    ev = out.evidence[0]
+    head = ev.source.split(".")[0]
+    ev.source = head + ".no_such_field"
+    r = check(world, out, t)
+    assert not r.passed and "source_resolves" in {f.check for f in r.failures}
+
+
+def test_a_delta_from_the_future(world):
+    """Added 2026-10-27: the delta of a later event is in the future too."""
+    E, store, trs, goal = world
+    later = next(t for t in trs if t.match_clock_s > goal.match_clock_s + 60)
+    d = store.deltas.get(later.event_id)
+    assert d, "the later trigger needs deltas"
+    key = next(iter(d))
+    found, time_ok, _ = store.resolve(f"{later.event_id}.deltas.{key}", goal.match_clock_s)
+    assert found and not time_ok
+
+
+def test_a_flat_delta_key_and_a_name_resolve(world):
+    """The tools tell the model to cite <event_id>.deltas.<key> and show names like team_name."""
+    E, store, trs, goal = world
+    d = store.deltas.get(goal.event_id)
+    key = next(k for k in d if "." in k) if any("." in k for k in d) else next(iter(d))
+    found, time_ok, v = store.resolve(f"{goal.event_id}.deltas.{key}", goal.match_clock_s)
+    assert found and time_ok and v == d[key]
+    found, time_ok, v = store.resolve(f"{goal.event_id}.team_name", goal.match_clock_s)
+    assert found and time_ok and isinstance(v, str) and v

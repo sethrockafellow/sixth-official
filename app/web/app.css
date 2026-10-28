@@ -1,54 +1,55 @@
-/* Sixth Official: match log, broadcast style (2026-10-27).
-   Concept: a night-match broadcast. A dark studio page, a green pitch with mowing stripes,
-   white type, one electric accent (lime) for what is live, selected or pressed. No league or
-   broadcaster marks: the type is Barlow and Barlow Condensed (open fonts, SIL OFL), not a
-   league typeface.
+/* Sixth Official: match log, dressed as a match official (2026-10-27).
+   Concept: the officials' kit and tools. Referee black for the page, chalk-white type, the yellow
+   card as the one accent (live, selected, pressed), the red card for what the verifier stopped.
+   The scores, the clock and the big numbers are set like the fourth official's substitution
+   board: a dot-matrix face (Doto). Words use Atkinson Hyperlegible, a typeface drawn for
+   legibility by the Braille Institute: the official's notes must be read by everyone. The
+   assistant referee's flag (red and yellow quarters) marks the name; a small yellow card marks
+   each section. Both fonts are open (SIL OFL), served from app/web/fonts.
    - The log is the main element: one row per moment, the three viewers side by side.
    - Color is for the two clubs (kit colors) and for exceptions only:
-     amber = corrected on retry, grey dashed = template, coral = stopped by the verifier.
-   - Two type families from one superfamily: Barlow for words, Barlow Condensed for scores,
-     minutes, numbers and labels.
+     amber = corrected on retry, grey dashed = template, red card = stopped by the verifier.
+   - Two type families: Atkinson Hyperlegible for words and small numbers, Doto for the score,
+     the clock and the big win chance and fact-check figures.
    - Every text color meets WCAG AA (4.5:1) on the surface it sits on.
    - Every control has a documented hover, focus-visible, active and disabled state. */
-@font-face{font-family:"Barlow";font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-weight:600;font-display:swap;src:url(fonts/barlow-latin-600-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-weight:700;font-display:swap;src:url(fonts/barlow-latin-700-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:400;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Doto";font-weight:700;font-display:swap;src:url(fonts/doto-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Doto";font-weight:900;font-display:swap;src:url(fonts/doto-latin-900-normal.woff2) format("woff2")}
 :root{
   color-scheme:dark;
-  --paper:#0e0c16;        /* page: studio dark */
-  --paper-2:#1b1826;      /* hover fill, raised */
-  --paper-3:#282435;      /* pressed fill, bar tracks */
-  --sheet:#15121f;        /* drawer, match report, cards, scorebug */
-  --ink:#f5f3fa;          /* text, strong rules */
-  --muted:#b7b0c6;        /* secondary text: 9.27:1 on --paper */
-  --rule:#2c2838;         /* hairline: separates, carries no meaning */
-  --rule-mid:#6f6884;     /* control borders: 3.68:1 on --paper */
-  --accent:#c6f432;       /* lime: live clock, primary button, focus ring, selected */
-  --accent-2:#d8ff5a;     /* lime, hover */
-  --accent-3:#a9d21e;     /* lime, pressed */
+  --paper:#0c0d0f;        /* page: referee black */
+  --paper-2:#17191c;      /* hover fill, raised */
+  --paper-3:#22252a;      /* pressed fill, bar tracks */
+  --sheet:#121417;        /* drawer, match report, cards, scorebug */
+  --ink:#f3f2ee;          /* text: chalk white */
+  --muted:#a8acb2;        /* secondary text: 8.53:1 on --paper */
+  --rule:#26292e;         /* hairline: separates, carries no meaning */
+  --rule-mid:#6b7079;     /* control borders: 3.91:1 on --paper */
+  --accent:#ffd400;       /* the yellow card: live clock, primary button, focus ring, selected */
+  --accent-2:#ffe14d;     /* yellow, hover */
+  --accent-3:#e0b800;     /* yellow, pressed */
+  --flag-red:#e2231a;     /* the assistant referee's flag, with the yellow */
   --pitch:#11402a;        /* pitch surface */
   --pitch-2:#144a31;      /* mowing stripe */
   --pitch-line:#9cc4ae;   /* pitch markings: 6.10:1 on --pitch, 5.32:1 on --pitch-2 */
-  --disabled:#6a6478;     /* disabled text: exempt from WCAG 1.4.3 */
+  --disabled:#62666d;     /* disabled text: exempt from WCAG 1.4.3 */
   --home:#4a8ae8;         /* Larkspur blue */
   --away:#e8834a;         /* copper */
   --home-ink:#4a8ae8;     /* a club color as text: the kit color, lightened if needed for 4.5:1 */
   --away-ink:#e8834a;
-  --home-on:#0e0c16;      /* text on a club color (shirt numbers): white or the page color */
-  --away-on:#0e0c16;
+  --home-on:#0c0d0f;      /* text on a club color (shirt numbers): white or the page color */
+  --away-on:#0c0d0f;
   --sprint:#ff5fd2;       /* trails: sprinting, over 25 km/h (3.81:1 on --pitch-2) */
-  --draw:#4b4659;         /* chart fill only, never text */
+  --draw:#4a4e55;         /* chart fill only, never text */
   --retry:#f2b33d;        /* amber: corrected on retry */
-  --tmpl:#aaa4b8;         /* template */
-  --bad:#ff7a6b;          /* coral: stopped by the verifier */
-  --ui:"Barlow","Segoe UI",system-ui,sans-serif;
-  --cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
-  --mono:var(--cond);     /* minutes and numbers: condensed */
+  --tmpl:#a3a7ad;         /* template */
+  --bad:#ff5a4a;          /* the red card: stopped by the verifier (6.31:1 on --paper) */
+  --ui:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --cond:var(--ui);       /* labels: the same face, bold capitals */
+  --mono:var(--ui);       /* minutes and small numbers */
+  --dot:"Doto","Courier New",ui-monospace,monospace;   /* the substitution board */
 }
 *{box-sizing:border-box}
 [hidden]{display:none !important}
@@ -424,3 +425,35 @@ h1,h2,h3,h4,p{margin:0}
 /* The chart's hint sits right under the chart, then the pre-match line (fix 2026-10-27: they overlapped). */
 #chart-hint{margin:-1rem 0 .35rem}
 .pre{margin:0 0 1rem}
+
+/* ---------------------------------------------------------------- the officials' layer (2026-10-27)
+   Overrides the broadcast layer above: the substitution board for numbers, the AR flag for the
+   name, a yellow card before each section label. */
+.wordmark{font:700 1.05rem/1 var(--ui);letter-spacing:.12em}
+.wordmark::before{width:1rem;height:.75rem;vertical-align:-.05rem;margin-right:.6rem;
+  background:conic-gradient(var(--accent) 0 25%,var(--flag-red) 0 50%,var(--accent) 0 75%,var(--flag-red) 0)}
+.score{background:#000;border:1px solid var(--rule-mid);padding:.3rem .45rem .3rem 1rem}
+.club{font:700 1.05rem/1 var(--ui);letter-spacing:.08em}
+.goals{font:900 2.5rem/1 var(--dot);letter-spacing:.02em}
+.clock{font:900 1.15rem/1 var(--dot);color:var(--paper);background:var(--accent);padding:.38rem .5rem .3rem}
+.view button,.seg button{font:700 13.5px/1.3 var(--ui);letter-spacing:.07em}
+.label,.log th,.shape-table th,.run-table th,.stats thead th,.ft h2,.ft h3,.dead h3,.drawer h4,.through-controls .tb-label,.help summary,.help h3{font-family:var(--ui);font-size:13px;font-weight:700;letter-spacing:.1em}
+/* A small yellow card, tilted as if just shown, before each section label. */
+.label::before,.help h3::before{width:.5rem;height:.7rem;background:var(--accent);transform:rotate(-10deg);margin-right:.55rem;vertical-align:-.08rem}
+.win dd{font:900 2.5rem/1 var(--dot)}
+.checks dd{font:900 1.45rem/1 var(--dot)}
+.stats td,.ft td{font:700 15.5px/1.3 var(--ui);font-variant-numeric:tabular-nums}
+.ft-banner .notice{font:700 2.2rem/1 var(--ui);letter-spacing:.14em;color:var(--accent)}
+.ft-banner .goals{font:900 4.2rem/1 var(--dot)}
+.btn.primary{font:700 15px/1.2 var(--ui);letter-spacing:.1em}
+.dead .count{font:700 14px/1.2 var(--ui);color:var(--accent);font-variant-numeric:tabular-nums}
+.cam-hud{font:700 14px/1.25 var(--ui);letter-spacing:.06em}
+.log td.min{font-family:var(--ui)}
+/* The drawer: a red card marks a draft the verifier stopped. */
+.stopped{border-left:4px solid var(--bad)}
+@media (max-width:46rem){
+  .score{padding:.25rem .3rem .25rem .5rem;gap:.45rem}
+  .club{font-size:.82rem;letter-spacing:.04em}
+  .goals{font-size:1.8rem}
+  .clock{font-size:.95rem;padding:.3rem .35rem .25rem}
+}

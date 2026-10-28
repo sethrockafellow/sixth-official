@@ -5,6 +5,7 @@
 import re
 from typing import Any, Callable, Optional
 
+from .roster import name_event
 from .schema import (
     EvidenceItem, NarrativeOutput, VerificationResult, CheckFailure,
     TOLERANCE, LABEL_BANDS, CAUSAL_WORDS,
@@ -82,7 +83,9 @@ class VerifierStore:
         self.deltas = deltas or {}
 
     def resolve(self, source: str, at_s: float):
-        """Return (found, time_ok, value) for a source path at or before at_s."""
+        """Return (found, time_ok, value) for a source path at or before at_s.
+        found is False when the record or the field does not exist (fixed 2026-10-27:
+        a missing field used to count as found, and its value check was skipped)."""
         head, _, path = source.partition(".")
         if not path:
             return False, False, None
@@ -96,25 +99,35 @@ class VerifierStore:
             v = _dig(snap, parts)
             if v is None:
                 v = _dig(getattr(snap, "match_state", None), parts)
-            return True, True, v
+            return v is not None, True, v
         if head.startswith("p_"):
             row = self.physical.get(head)
             if row is None:
                 return False, False, None
             if float(row.match_clock_s) > at_s:
                 return True, False, None
-            return True, True, _dig(row, parts)
+            v = _dig(row, parts)
+            return v is not None, True, v
         ev = self.events.get(head)
         if ev is None:
             return False, False, None
+        # Fixed 2026-10-27: the clock is checked first, for event fields and deltas alike.
+        # Before, a delta of a later event resolved, so a comment could cite the future.
+        if ev.match_clock_s > at_s:
+            return True, False, None
         if parts[0] == "deltas":
             d = self.deltas.get(head)
             if not d:
                 return False, False, None
-            return True, True, _dig(d, parts[1:])
-        if ev.match_clock_s > at_s:
-            return True, False, None
-        return True, True, _dig(ev, parts)
+            # The engine stores flat keys ("home.momentum"), so join the rest of the path.
+            v = d.get(".".join(parts[1:])) if isinstance(d, dict) else None
+            if v is None:
+                v = _dig(d, parts[1:])
+            return v is not None, True, v
+        # Event fields include the names the tools show the model (team_name, player_name).
+        raw = ev.model_dump() if hasattr(ev, "model_dump") else ev
+        v = _dig(name_event(raw), parts) if isinstance(raw, dict) else _dig(ev, parts)
+        return v is not None, True, v
 
 
 def verify(output: NarrativeOutput, store: VerifierStore, at_s: float) -> VerificationResult:

@@ -269,7 +269,7 @@ def ppda(t, team_id, events):
             if depth_opp <= 0.6 * PITCH_LENGTH_M:
                 actions += 1
     if actions == 0:
-        return float(min(30, passes))
+        return 30.0   # the documented cap (fixed 2026-10-27: was min(30, passes))
     return min(30.0, passes / actions)
 
 

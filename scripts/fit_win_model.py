@@ -17,7 +17,7 @@ The model (sixth/winmodel.py runs it during a match):
   4. The rest of the match is played out exactly, minute by minute, over every possible score
      (sixth/winmodel.py). The result: home win, draw and away win chances.
   During a match two more things move the rates (the data here cannot test them, so they are
-  marked as assumptions in docs/WIN_MODEL.md): expected goals so far, and red cards.
+  marked as assumptions in docs/METRICS.md): expected goals so far, and red cards.
 
 The test: Brier score (lower is better; the mean squared error of the three chances against
 what happened) before kick-off and at half-time, for this model and two simpler ones.
