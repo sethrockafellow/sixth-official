@@ -1,0 +1,17 @@
+# Secrets and local settings: never in the repository.
+.env
+.env.*
+!.env.example
+*.key
+*.password
+*.pem
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+# Kept on the server, not published: the design log, its contrast script, and the demo match
+# narrated without a model (the live site uses the Foundry match).
+docs/UI.md
+docs/contrast.py
+data/match-4-template.json

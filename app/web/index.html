@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sixth Official: match log</title>
+<meta name="description" content="Match commentary that checks its own facts. Synthetic data; fictional clubs and players.">
+<meta name="theme-color" content="#0e0c16">
+<link rel="preload" href="fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/barlow-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="mast">
+  <p class="wordmark">Sixth Official</p>
+  <div class="score" aria-label="Score">
+    <span class="club home"><i class="kit" aria-hidden="true"></i><span id="home-name">Home</span></span>
+    <span class="goals" id="home-goals">0</span>
+    <span class="clock" id="clock" aria-label="Match minute">0'</span>
+    <span class="goals" id="away-goals">0</span>
+    <span class="club away"><span id="away-name">Away</span><i class="kit" aria-hidden="true"></i></span>
+  </div>
+  <div class="mast-right">
+  <a class="help-link" id="help-link" href="#help">How to use</a>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true">English</button>
+    <button type="button" data-lang="es" aria-pressed="false">Español</button>
+  </div>
+  </div>
+</header>
+
+<details class="help" id="help" open>
+  <summary id="help-title">How to use this page</summary>
+  <div class="help-body" id="help-body"></div>
+</details>
+
+<section class="transport" aria-label="Replay controls">
+  <button type="button" id="play" class="btn primary" disabled>Play</button>
+  <label class="speed"><span id="speed-label">Speed</span>
+    <select id="speed" disabled>
+      <option value="1">1x (real time)</option>
+      <option value="2">2x</option>
+      <option value="5">5x</option>
+      <option value="10">10x</option>
+      <option value="15">15x</option>
+      <option value="30" selected>30x</option>
+      <option value="60">60x</option>
+      <option value="120">120x</option>
+    </select>
+  </label>
+  <input type="range" id="scrub" min="0" max="5400" step="1" value="0" aria-label="Match time" disabled>
+  <button type="button" id="next-goal" class="btn" disabled>Next goal</button>
+</section>
+
+<section class="ft-banner" id="ft-banner" hidden aria-live="polite"></section>
+
+<section class="band" aria-label="The match now">
+  <div class="pitch-wrap">
+    <div class="view" role="group" aria-label="Pitch view">
+      <button type="button" data-view="play" aria-pressed="false">Latest play</button>
+      <button type="button" data-view="players" aria-pressed="true">All players</button>
+      <button type="button" data-view="heat" aria-pressed="false">Heat map</button>
+      <button type="button" data-view="shape" aria-pressed="false">Shape</button>
+      <button type="button" data-view="running" aria-pressed="false">Running</button>
+    </div>
+    <div class="opts">
+      <label class="check"><input type="checkbox" id="flip" checked> <span id="flip-label">Teams switch ends at half-time</span></label>
+      <div class="kits" role="group" aria-labelledby="kits-label">
+        <span id="kits-label">Kit colors</span>
+        <label><input type="color" id="kit-home" value="#4a8ae8"> <span id="kit-home-name">Home</span></label>
+        <label><input type="color" id="kit-away" value="#e8834a"> <span id="kit-away-name">Away</span></label>
+        <button type="button" class="linkish" id="kit-reset">Reset</button>
+        <span class="warn" id="kit-warn" hidden></span>
+      </div>
+    </div>
+    <div class="heat-controls" id="shape-controls" hidden>
+      <div class="seg" role="group" aria-label="Team" id="shape-team">
+        <button type="button" data-team="home" aria-pressed="true">Home</button>
+        <button type="button" data-team="away" aria-pressed="false">Away</button>
+      </div>
+      <div class="seg" role="group" aria-label="Phase of play" id="shape-state">
+        <button type="button" data-state="out" aria-pressed="true">Without the ball</button>
+        <button type="button" data-state="in" aria-pressed="false">With the ball</button>
+      </div>
+      <div class="seg" role="group" aria-label="Which minutes">
+        <button type="button" id="shape-live" aria-pressed="true">Live: the last 15 minutes</button>
+      </div>
+    </div>
+    <div class="heat-controls" id="heat-controls" hidden>
+      <div class="seg" role="group" aria-label="Team" id="heat-team">
+        <button type="button" data-team="home" aria-pressed="true">Home</button>
+        <button type="button" data-team="away" aria-pressed="false">Away</button>
+        <button type="button" data-team="officials" aria-pressed="false">Officials</button>
+      </div>
+      <label class="speed"><span id="heat-player-label">Player</span>
+        <select id="heat-player"></select>
+      </label>
+    </div>
+    <div class="pitch-box">
+      <svg id="pitch" viewBox="-2 -3.2 109 76.6" role="img" aria-label="The pitch: the latest play"></svg>
+      <p class="pitch-tip" id="pitch-tip" hidden aria-hidden="true"></p>
+      <div class="zoom" role="group" aria-label="Zoom">
+        <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+        <button type="button" id="zoom-out" aria-label="Zoom out" disabled>&minus;</button>
+        <button type="button" id="zoom-fit" disabled>Whole pitch</button>
+        <button type="button" id="zoom-follow" aria-pressed="true">Follow the ball</button>
+      </div>
+    </div>
+    <p class="hint" id="pitch-hint"></p>
+    <div class="through-controls" id="through-controls" hidden>
+      <label class="tb-label" id="tb-label" for="tb-pick">Key moments</label>
+      <select id="tb-pick"></select>
+      <button type="button" class="btn" id="tb-again" hidden>Play it again</button>
+      <button type="button" class="btn cam-btn" id="cam-player" hidden>Player camera</button>
+      <button type="button" class="btn cam-btn" id="cam-ref" hidden>Referee camera</button>
+      <p class="hint km" id="km-hint"></p>
+    </div>
+    <p class="tb-caption" id="tb-caption" aria-live="polite"></p>
+    <section class="cam" id="cam" hidden aria-labelledby="cam-title">
+      <div class="cam-head">
+        <h2 class="label" id="cam-title">Player camera</h2>
+        <button type="button" class="btn" id="cam-ball">Look at the ball</button>
+        <button type="button" class="btn" id="cam-close">Close</button>
+      </div>
+      <div class="cam-box">
+        <canvas id="cam-canvas" tabindex="0" role="img" aria-label="3D view from a player's eyes"></canvas>
+        <p class="cam-hud" id="cam-hud" aria-live="off"></p>
+      </div>
+      <p class="cam-hint" id="cam-hint">Hold the middle mouse button (or the left button) and move the mouse to turn his head.</p>
+    </section>
+    <aside class="dead" id="dead" hidden aria-live="polite"></aside>
+    <p class="heat-legend" id="heat-legend" hidden aria-hidden="true"><span id="heat-less">Less</span><i></i><i></i><i></i><i></i><i></i><span id="heat-more">More ground covered</span></p>
+    <p class="tb-caption" id="shape-caption" aria-live="polite" hidden></p>
+    <p class="pitch-note" id="pitch-note">The last 12 actions. Lines are passes, curves are crosses, dashes are runs with the ball, dotted lines are clearances, squares are restarts, small crosses are duels, dots are shots.</p>
+    <table class="run-table" id="run-table" hidden>
+      <caption class="sr-only" id="run-caption">Running by player</caption>
+      <thead><tr id="run-head"></tr></thead>
+      <tbody id="run-body"></tbody>
+    </table>
+    <table class="shape-table" id="shape-table" hidden>
+      <caption class="sr-only" id="shape-table-caption">Formation by 15-minute block</caption>
+      <thead><tr id="shape-head"></tr></thead>
+      <tbody id="shape-body"></tbody>
+    </table>
+  </div>
+  <div class="readout">
+    <h2 class="label" id="win-title">Win chance</h2>
+    <dl class="win" id="win"></dl>
+    <div class="winbar" id="winbar" aria-hidden="true"><i class="home"></i><i class="draw"></i><i class="away"></i></div>
+    <div class="chart-box">
+      <svg id="chart" preserveAspectRatio="none" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="90" aria-valuenow="0"
+           aria-label="Win chance over the match. Click a point, or use the arrow keys, to go to that minute."></svg>
+      <p class="chart-tip" id="chart-tip" hidden aria-hidden="true"></p>
+    </div>
+    <p class="hint" id="chart-hint"></p>
+    <p class="pre" id="pre"></p>
+    <h2 class="label" id="stats-title">Last 10 minutes</h2>
+    <table class="stats" id="stats"></table>
+    <h2 class="label" id="checks-title">Fact checks</h2>
+    <dl class="checks" id="checks"></dl>
+  </div>
+</section>
+
+<section class="ft" id="ft" hidden aria-labelledby="ft-title"></section>
+
+<main class="log-wrap">
+  <p class="hint" id="log-hint"></p>
+  <table class="log" id="log">
+    <caption class="sr-only" id="log-caption">Match log: each moment, and what each viewer was told. Newest first.</caption>
+    <thead><tr id="log-head"></tr></thead>
+    <tbody id="log-body"></tbody>
+  </table>
+  <p class="source" id="source"></p>
+</main>
+
+<p class="sr-only" id="announce" aria-live="polite"></p>
+
+<aside class="drawer" id="drawer" hidden>
+  <div class="drawer-inner" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <button type="button" class="btn close" id="drawer-close">Close</button>
+    <div id="drawer-body"></div>
+  </div>
+</aside>
+
+<nav class="gloss-nav" aria-label="Glossary"><a class="gloss-link" id="gloss-link" href="glossary.html">Glossary: what each term means (xG, PPDA, duels, field tilt and more)</a></nav>
+<footer class="foot" id="foot">Synthetic data only. Larkspur FC, Copper Vale and their players are fictional. Built for the Microsoft x Premier League Inside the Game hackathon.</footer>
+<script src="motion.js"></script>
+<script src="cam.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

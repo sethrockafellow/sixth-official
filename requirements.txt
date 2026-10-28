@@ -1,0 +1,8 @@
+pydantic>=2.7
+numpy>=1.26
+agent-framework-foundry>=1.15
+agent-framework-openai>=1.15
+openai>=1.60
+azure-identity>=1.19
+python-dotenv>=1.0
+pytest>=8.0

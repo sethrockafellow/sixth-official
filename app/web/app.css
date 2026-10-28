@@ -1,0 +1,426 @@
+/* Sixth Official: match log, broadcast style (2026-10-27).
+   Concept: a night-match broadcast. A dark studio page, a green pitch with mowing stripes,
+   white type, one electric accent (lime) for what is live, selected or pressed. No league or
+   broadcaster marks: the type is Barlow and Barlow Condensed (open fonts, SIL OFL), not a
+   league typeface.
+   - The log is the main element: one row per moment, the three viewers side by side.
+   - Color is for the two clubs (kit colors) and for exceptions only:
+     amber = corrected on retry, grey dashed = template, coral = stopped by the verifier.
+   - Two type families from one superfamily: Barlow for words, Barlow Condensed for scores,
+     minutes, numbers and labels.
+   - Every text color meets WCAG AA (4.5:1) on the surface it sits on.
+   - Every control has a documented hover, focus-visible, active and disabled state. */
+@font-face{font-family:"Barlow";font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:600;font-display:swap;src:url(fonts/barlow-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-weight:700;font-display:swap;src:url(fonts/barlow-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:800;font-display:swap;src:url(fonts/barlow-condensed-latin-800-normal.woff2) format("woff2")}
+:root{
+  color-scheme:dark;
+  --paper:#0e0c16;        /* page: studio dark */
+  --paper-2:#1b1826;      /* hover fill, raised */
+  --paper-3:#282435;      /* pressed fill, bar tracks */
+  --sheet:#15121f;        /* drawer, match report, cards, scorebug */
+  --ink:#f5f3fa;          /* text, strong rules */
+  --muted:#b7b0c6;        /* secondary text: 9.27:1 on --paper */
+  --rule:#2c2838;         /* hairline: separates, carries no meaning */
+  --rule-mid:#6f6884;     /* control borders: 3.68:1 on --paper */
+  --accent:#c6f432;       /* lime: live clock, primary button, focus ring, selected */
+  --accent-2:#d8ff5a;     /* lime, hover */
+  --accent-3:#a9d21e;     /* lime, pressed */
+  --pitch:#11402a;        /* pitch surface */
+  --pitch-2:#144a31;      /* mowing stripe */
+  --pitch-line:#9cc4ae;   /* pitch markings: 6.10:1 on --pitch, 5.32:1 on --pitch-2 */
+  --disabled:#6a6478;     /* disabled text: exempt from WCAG 1.4.3 */
+  --home:#4a8ae8;         /* Larkspur blue */
+  --away:#e8834a;         /* copper */
+  --home-ink:#4a8ae8;     /* a club color as text: the kit color, lightened if needed for 4.5:1 */
+  --away-ink:#e8834a;
+  --home-on:#0e0c16;      /* text on a club color (shirt numbers): white or the page color */
+  --away-on:#0e0c16;
+  --sprint:#ff5fd2;       /* trails: sprinting, over 25 km/h (3.81:1 on --pitch-2) */
+  --draw:#4b4659;         /* chart fill only, never text */
+  --retry:#f2b33d;        /* amber: corrected on retry */
+  --tmpl:#aaa4b8;         /* template */
+  --bad:#ff7a6b;          /* coral: stopped by the verifier */
+  --ui:"Barlow","Segoe UI",system-ui,sans-serif;
+  --cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --mono:var(--cond);     /* minutes and numbers: condensed */
+}
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 var(--ui);min-height:100vh}
+button,select,input{font:inherit;color:inherit}
+h1,h2,h3,h4,p{margin:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Focus: one ring for every control, keyboard only. Ink, offset from the control. */
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ---------------------------------------------------------------- masthead */
+.mast{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1.5rem;padding:.9rem 1.6rem;border-bottom:2px solid var(--ink)}
+.wordmark{font-weight:700;font-size:1rem;letter-spacing:.04em;text-transform:uppercase}
+.score{display:flex;align-items:center;gap:1.1rem}
+.club{display:flex;align-items:center;gap:.5rem;font-size:1.05rem;font-weight:600;white-space:nowrap}
+.kit{display:inline-block;width:.8rem;height:.8rem}
+.club.home .kit{background:var(--home)}
+.club.away .kit{background:var(--away)}
+.goals{font:700 2.1rem/1 var(--mono);font-variant-numeric:tabular-nums}
+.clock{font:500 .95rem/1 var(--mono);color:var(--muted);min-width:3.5ch;text-align:center}
+
+/* Language: text buttons. Pressed = ink text with a 2 px underline. */
+.lang{justify-self:end;display:flex;gap:1.1rem}
+.lang button{background:none;border:0;border-bottom:2px solid transparent;padding:.15rem 0;color:var(--muted);cursor:pointer}
+.lang button:hover{color:var(--ink);border-bottom-color:var(--rule-mid)}
+.lang button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+
+/* ---------------------------------------------------------------- buttons
+   default  1 px --rule-mid border, ink text, no fill
+   hover    --paper-2 fill, ink border
+   active   --paper-3 fill
+   focus    2 px ink ring, 3 px offset (keyboard)
+   disabled --disabled text, --rule border, no pointer */
+.btn{background:transparent;border:1px solid var(--rule-mid);color:var(--ink);padding:.4rem .85rem;cursor:pointer;border-radius:0}
+.btn:hover:not(:disabled){background:var(--paper-2);border-color:var(--ink)}
+.btn:active:not(:disabled){background:var(--paper-3)}
+.btn:disabled{color:var(--disabled);border-color:var(--rule);cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--paper);border-color:var(--accent);min-width:5.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-family:var(--cond);font-size:16px}
+.btn.primary:hover:not(:disabled){background:var(--accent-2);border-color:var(--accent-2)}
+.btn.primary:active:not(:disabled){background:var(--accent-3);border-color:var(--accent-3)}
+.btn.primary:disabled{background:transparent;color:var(--disabled);border-color:var(--rule)}
+
+/* ---------------------------------------------------------------- transport */
+.transport{display:flex;align-items:center;gap:1.1rem;padding:.7rem 1.6rem;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.speed{display:flex;align-items:center;gap:.5rem;color:var(--muted)}
+.speed select{background:var(--paper);border:1px solid var(--rule-mid);padding:.3rem .45rem;cursor:pointer;color:var(--ink)}
+.speed select:hover:not(:disabled){background:var(--paper-2);border-color:var(--ink)}
+.speed select:disabled{color:var(--disabled);border-color:var(--rule);cursor:not-allowed}
+#scrub{flex:1;min-width:10rem;accent-color:var(--accent);cursor:pointer}
+#scrub:disabled{cursor:not-allowed;opacity:.4}
+
+/* ---------------------------------------------------------------- the match now */
+.band{display:grid;grid-template-columns:minmax(0,46rem) minmax(0,1fr);gap:2.4rem;padding:1.4rem 1.6rem 1.6rem;border-bottom:1px solid var(--rule)}
+.pitch-wrap{min-width:0}
+#pitch{display:block;width:100%;height:auto;background:var(--pitch);touch-action:pinch-zoom;overscroll-behavior:contain}
+#pitch text{font-family:var(--cond)}
+/* Zoom: small buttons in the pitch's top-right corner. When zoomed, drag the pitch to move it. */
+.pitch-box{position:relative}
+.pitch-box.zoomed #pitch{cursor:grab}
+.pitch-box.dragging #pitch{cursor:grabbing}
+.zoom{position:absolute;top:.4rem;right:.4rem;display:flex;gap:.25rem}
+/* Hover label for the player under the pointer: ink, above and to the right of the pointer. */
+.pitch-tip{position:absolute;transform:translate(12px,-130%);background:var(--ink);color:var(--paper);font:600 12.5px/1.3 var(--ui);
+  padding:.2rem .45rem;white-space:nowrap;pointer-events:none;margin:0;z-index:2}
+.zoom button{background:var(--paper);border:1px solid var(--rule-mid);color:var(--ink);font:600 13px/1 var(--ui);padding:.3rem .5rem;min-width:1.9rem;cursor:pointer}
+.zoom button:hover:not(:disabled){background:var(--paper-2);border-color:var(--ink)}
+.zoom button:active:not(:disabled){background:var(--paper-3)}
+.zoom button:disabled{color:var(--disabled);border-color:var(--rule);cursor:not-allowed}
+.zoom button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.zoom #zoom-in,.zoom #zoom-out{font-size:16px}
+@media (max-width:46rem){.zoom #zoom-fit{display:none}}
+.pitch-note{font-size:13px;color:var(--muted);margin-top:.45rem;max-width:65ch}
+/* Pitch view: text buttons, like the language switch. Pressed = ink text, 2 px underline. */
+.view{display:flex;flex-wrap:wrap;gap:.3rem 1.1rem;margin-bottom:.5rem}
+.view button,.seg button{background:none;border:0;border-bottom:2px solid transparent;padding:.1rem 0;color:var(--muted);cursor:pointer;font-size:14px}
+.view button:hover,.seg button:hover{color:var(--ink);border-bottom-color:var(--rule-mid)}
+.view button[aria-pressed="true"],.seg button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.view button:disabled{color:var(--disabled);cursor:wait;border-bottom-color:transparent}
+/* Heat map: team switch and player picker, then a five-step legend under the pitch. */
+.heat-controls{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.6rem;margin-bottom:.55rem}
+.seg{display:flex;gap:1.1rem}
+.heat-legend{display:flex;align-items:center;gap:.3rem;font-size:13px;color:var(--muted);margin-top:.45rem}
+.heat-legend i{display:inline-block;width:1.5rem;height:.7rem}
+.heat-legend span:first-child{margin-right:.3rem}.heat-legend span:last-child{margin-left:.3rem}
+/* Through balls: step to the second before each pass; the caption gives the offside margin. */
+.through-controls{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .6rem;margin-top:.5rem}
+.through-controls .tb-label{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:.2rem}
+.through-controls #tb-again{font-size:13.5px;padding:.25rem .65rem}
+.through-controls select{background:var(--paper);border:1px solid var(--rule-mid);padding:.3rem .45rem;color:var(--ink);font-size:14px;cursor:pointer;max-width:100%}
+.through-controls select:hover:not(:disabled){background:var(--paper-2);border-color:var(--ink)}
+.through-controls select:disabled{color:var(--disabled);border-color:var(--rule);cursor:not-allowed}
+.tb-caption{font-size:14.5px;font-weight:600;margin-top:.45rem;max-width:65ch}
+.tb-caption:empty{display:none}
+/* Shape: one row per 15-minute block. A row is a button that shows that block on the pitch. */
+.shape-table{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:13.5px}
+.shape-table th{text-align:left;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:0 .6rem .35rem 0;border-bottom:1px solid var(--ink)}
+.shape-table td{padding:.3rem .6rem .3rem 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.shape-table td .f{font:600 13.5px/1.3 var(--mono)}
+.shape-table td .m{display:block;font-size:12px;color:var(--muted)}
+.shape-table td.later{color:var(--muted)}
+.shape-table tr.shown td{background:var(--paper-2)}
+.shape-table td.changed .f{border-bottom:2px solid var(--ink)}
+.blk{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;white-space:nowrap;text-align:left;text-decoration:underline;text-decoration-color:var(--rule-mid);text-underline-offset:3px}
+.blk:hover{text-decoration-color:var(--ink)}
+.blk:disabled{color:var(--disabled);text-decoration:none;cursor:default}
+.readout{display:flex;flex-direction:column;min-width:0}
+.label{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.win{display:grid;grid-template-columns:auto auto auto;justify-content:space-between;margin:.5rem 0 .55rem}
+.win div{display:flex;flex-direction:column}
+.win div:nth-child(2){align-items:center}
+.win div:nth-child(3){align-items:flex-end}
+.win dd{margin:0;font:700 2.2rem/1 var(--mono);font-variant-numeric:tabular-nums}
+.win dt{font-size:13.5px;color:var(--muted);margin-top:.25rem;order:2}
+.win .home dd{color:var(--home-ink)}
+.win .away dd{color:var(--away-ink)}
+.winbar{display:flex;height:10px}
+.winbar i{display:block;height:100%;transition:width .3s}
+.winbar .home{background:var(--home)}.winbar .draw{background:var(--draw)}.winbar .away{background:var(--away)}
+@media (prefers-reduced-motion:reduce){.winbar i{transition:none}}
+#chart{display:block;width:100%;height:84px;margin:.6rem 0 1.4rem}
+.checks{display:flex;flex-wrap:wrap;gap:.4rem 1.6rem;margin:.5rem 0 0}
+.checks div{display:flex;align-items:baseline;gap:.45rem}
+.checks dd{margin:0;font:700 1.25rem/1 var(--mono);font-variant-numeric:tabular-nums;order:-1}
+.checks dt{font-size:13.5px;color:var(--muted)}
+.checks .retry dd{color:var(--retry)}.checks .tmpl dd{color:var(--tmpl)}.checks .stop dd{color:var(--bad)}
+
+/* ---------------------------------------------------------------- the log */
+.log-wrap{padding:0 1.6rem 1.6rem}
+.log{width:100%;border-collapse:collapse;table-layout:fixed}
+.log col.c-min{width:4.2rem}.log col.c-moment{width:15rem}
+.log th{text-align:left;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+        padding:1rem .9rem .5rem 0;border-bottom:1px solid var(--ink);vertical-align:bottom}
+.log td{padding:0;border-bottom:1px solid var(--rule);vertical-align:top}
+.log td.min{font:500 13px/1.5 var(--mono);color:var(--muted);padding:.7rem .9rem .7rem 0}
+/* The minute is a button: it shows all players at that moment. Underlined so it reads as an action. */
+.jump{background:none;border:0;padding:0 .1rem;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;
+      text-decoration-color:var(--rule-mid);text-underline-offset:3px}
+.jump:hover{color:var(--ink);text-decoration-color:var(--ink)}
+.jump:active{background:var(--paper-3)}
+.log td.moment{padding:.7rem 1.2rem .7rem 0}
+.moment .what{display:block}
+.moment .who{display:block;font-size:13.5px;color:var(--muted)}
+.moment .kit{width:.55rem;height:.55rem;margin-right:.45rem;vertical-align:.08em}
+.moment .kit.home{background:var(--home)}.moment .kit.away{background:var(--away)}
+/* A goal row: 2 px ink rule above, bold minute and moment. */
+.log tr.goal td{border-top:2px solid var(--ink)}
+.log tr.goal td.min,.log tr.goal .what{font-weight:700;color:var(--ink)}
+.log tr.new td{animation:arrive 1.4s ease-out}
+@keyframes arrive{from{background:var(--paper-3)}}
+@media (prefers-reduced-motion:reduce){.log tr.new td{animation:none}}
+
+/* A comment cell: a button. No mark when verified; a left rule and a word for the exceptions. */
+.say{display:block;width:100%;height:100%;text-align:left;background:none;border:0;border-left:2px solid transparent;
+     padding:.7rem 1rem .75rem .8rem;cursor:pointer;line-height:1.42}
+.say:hover{background:var(--paper-2)}
+.say:active{background:var(--paper-3)}
+.say .mark{display:block;font-size:13px;margin-top:.3rem}
+.say.s-verified_on_retry{border-left-color:var(--retry)}
+.say.s-verified_on_retry .mark{color:var(--retry)}
+.say.s-fallback{border-left:2px dashed var(--tmpl)}
+.say.s-fallback .mark{color:var(--tmpl)}
+.empty-log{color:var(--muted);padding:1.2rem 0}
+.source{font-size:13px;color:var(--muted);margin-top:1rem;max-width:65ch}
+
+/* ---------------------------------------------------------------- drawer */
+.drawer{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;justify-content:flex-end;z-index:20}
+.drawer-inner{width:min(38rem,100%);height:100%;overflow-y:auto;background:var(--sheet);border-left:2px solid var(--ink);padding:1.5rem 1.6rem 2.2rem;position:relative}
+.close{position:absolute;top:1.2rem;right:1.2rem}
+.drawer h3{font-size:1.15rem;font-weight:700;padding-right:5rem}
+.drawer .status{font-size:13.5px;margin-top:.3rem;color:var(--muted)}
+.drawer .status.verified_on_retry{color:var(--retry)}.drawer .status.fallback{color:var(--tmpl)}
+.drawer .quote{font-size:1.25rem;line-height:1.35;margin:.9rem 0 .4rem;max-width:40ch}
+.drawer .quote .claim{text-decoration:underline;text-decoration-color:var(--rule-mid);text-underline-offset:4px}
+.drawer h4{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:1.6rem 0 .5rem}
+.note{color:var(--muted);font-size:14px;max-width:65ch}
+.ev{width:100%;border-collapse:collapse;font-size:14px}
+.ev th{font:12px/1.2 var(--mono);color:var(--muted);text-align:left;font-weight:400;padding:0 .6rem .4rem 0;border-bottom:1px solid var(--ink)}
+.ev td{padding:.5rem .6rem .5rem 0;border-bottom:1px solid var(--rule);vertical-align:top;overflow-wrap:anywhere}
+.ev td.mono{font:13px/1.4 var(--mono);color:var(--muted)}
+.ev td.ok{font:13px/1.4 var(--mono);color:var(--ink)}
+.calls{list-style:none;margin:0;padding:0;font:13px/1.45 var(--mono)}
+.calls li{padding:.35rem 0;border-bottom:1px solid var(--rule);color:var(--muted);overflow-wrap:anywhere}
+.calls b{color:var(--ink);font-weight:600}
+.stopped{border-left:2px solid var(--bad);padding:.2rem 0 .2rem .8rem;margin:.5rem 0 .9rem}
+.stopped p{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--bad);margin-bottom:.35rem}
+.stopped ul{margin:0;padding-left:1.1rem}
+.stopped li{font:13px/1.45 var(--mono);color:var(--bad)}
+
+.foot{padding:1rem 1.6rem 1.4rem;color:var(--muted);font-size:13px;border-top:1px solid var(--rule)}
+
+
+/* ---------------------------------------------------------------- v2 (2026-10-25)
+   Half-time switch: a real checkbox with its label. */
+/* Options under the view buttons: the half-time switch and the kit colors. */
+.opts{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.4rem;margin:0 0 .55rem}
+.opts .check{margin:0}
+.kits{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .8rem;font-size:14px;color:var(--muted)}
+.kits label{display:inline-flex;align-items:center;gap:.35rem;cursor:pointer}
+.kits label:hover{color:var(--ink)}
+.kits input[type=color]{width:1.9rem;height:1.4rem;padding:0;border:1px solid var(--rule-mid);background:var(--paper);cursor:pointer}
+.kits input[type=color]:hover{border-color:var(--ink)}
+.kits .linkish{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;text-decoration-color:var(--rule-mid);text-underline-offset:3px;cursor:pointer;font-size:13.5px}
+.kits .linkish:hover{color:var(--ink);text-decoration-color:var(--ink)}
+.kits .warn{font-size:13px;color:var(--bad)}
+.check{display:inline-flex;align-items:center;gap:.45rem;font-size:14px;color:var(--muted);margin:0 0 .55rem;cursor:pointer}
+.check input{width:1rem;height:1rem;accent-color:var(--accent);margin:0;cursor:pointer}
+.check:hover{color:var(--ink)}
+/* Dead ball: a card under the pitch while the ball is out of play. Ink frame, no fill. */
+.dead{border:1px solid var(--rule-mid);border-left:4px solid var(--accent);background:var(--sheet);padding:.7rem .85rem .8rem;margin-top:.6rem;max-width:65ch}
+.dead .head{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;flex-wrap:wrap}
+.dead .kind{font-weight:700;font-size:1rem}
+.dead .count{font:600 13px/1.2 var(--mono);color:var(--muted)}
+.dead h3{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.65rem 0 .3rem}
+.dead p{font-size:14px;max-width:65ch}
+.bars{display:grid;grid-template-columns:auto minmax(4rem,1fr) auto;gap:.25rem .6rem;align-items:center;font-size:13.5px;margin:.25rem 0 .35rem}
+.bars .track{height:.7rem;background:var(--paper-3)}
+.bars .fill{display:block;height:100%}
+.bars .fill.home{background:var(--home)}.bars .fill.away{background:var(--away)}
+.bars .fill.before{background:var(--rule-mid)}
+.bars .v{font:600 13px/1.2 var(--mono);white-space:nowrap}
+.verdict{font-weight:600}
+.verdict.plain{font-weight:400;color:var(--muted)}
+/* Running: one row per player, measured against Premier League means for his position. */
+.run-table{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:13px}
+.run-table th{text-align:left;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:0 .45rem .35rem 0;border-bottom:1px solid var(--ink);vertical-align:bottom}
+.run-table td{padding:.25rem .45rem .25rem 0;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums}
+.run-table td.n{font-family:var(--mono)}
+.run-table tr.team td{border-top:2px solid var(--ink);font-weight:700}
+.run-table .vs{white-space:nowrap}
+.run-table .off td{color:var(--disabled)}
+/* Team stats, last 10 minutes. */
+.pre{font-size:13.5px;color:var(--muted);margin:-.8rem 0 1rem}
+.stats{border-collapse:collapse;font-size:13.5px;margin:.4rem 0 1.3rem;width:100%;max-width:28rem}
+.stats th,.stats td{text-align:left;padding:.2rem .6rem .2rem 0;border-bottom:1px solid var(--rule)}
+.stats th{font-weight:400;color:var(--muted)}
+.stats td{font:700 14px/1.3 var(--mono)}
+.stats td.home{color:var(--home-ink)}.stats td.away{color:var(--away-ink)}
+.stats thead th{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--ink)}
+
+/* Win chance chart: click or arrow keys go to that minute; a hover line and label show it. */
+.chart-box{position:relative}
+#chart{cursor:pointer}
+#chart:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.chart-tip{position:absolute;top:-1.6rem;transform:translateX(-50%);background:var(--ink);color:var(--paper);font:600 12px/1.3 var(--mono);
+  padding:.15rem .4rem;white-space:nowrap;pointer-events:none}
+/* Full time: a large notice above the pitch (the pitch and the replay stay), and the match report
+   under the pitch. */
+.ft-banner{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 2rem;padding:1.1rem 1.6rem;border-top:4px solid var(--accent);border-bottom:2px solid var(--rule);background:var(--sheet);color:var(--ink)}
+.ft-banner .notice{font-weight:700;font-size:2.4rem;line-height:1;letter-spacing:.06em;text-transform:uppercase}
+.ft-banner .line{display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap}
+.ft-banner .club{font-size:1.6rem;font-weight:700;color:var(--ink)}
+.ft-banner .club .kit{width:1.1rem;height:1.1rem;outline:2px solid var(--ink)}
+.ft-banner .club.home .kit{background:var(--home)}.ft-banner .club.away .kit{background:var(--away)}
+.ft-banner .goals{font:700 4rem/1 var(--mono);font-variant-numeric:tabular-nums}
+.ft-banner .ht{font:500 15px/1.3 var(--mono);color:var(--muted)}
+.ft-banner .acts{display:flex;gap:.7rem;margin-left:auto}
+.ft-banner .btn{color:var(--ink);border-color:var(--ink)}
+.ft-banner .btn:hover:not(:disabled){background:var(--paper-2);border-color:var(--accent)}
+.ft-banner .btn:active:not(:disabled){background:var(--paper-3)}
+@media (max-width:46rem){.ft-banner{padding:1rem}.ft-banner .notice{font-size:1.8rem}.ft-banner .goals{font-size:3rem}.ft-banner .club{font-size:1.2rem}.ft-banner .acts{margin-left:0}}
+.ft{padding:1.3rem 1.6rem 1.5rem;border-bottom:2px solid var(--ink);background:var(--sheet)}
+.ft h2#ft-title{font-size:1.15rem;color:var(--ink);letter-spacing:.04em;margin-bottom:.8rem}
+.ft h2{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+.ft .final .club{font-size:1.25rem}
+.ft .final .goals{font-size:2.4rem}
+.ft .final .ht{font:500 13px/1 var(--mono);color:var(--muted)}
+.ft .cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem}
+.ft h3{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 .45rem;padding-bottom:.3rem;border-bottom:1px solid var(--ink)}
+.ft ul{list-style:none;margin:0;padding:0}
+.ft li{padding:.3rem 0;border-bottom:1px solid var(--rule);font-size:14px}
+.ft li .m{display:inline-block;min-width:3.2ch;font:600 13px/1.4 var(--mono);color:var(--muted);margin-right:.5rem}
+.ft li .kit{width:.55rem;height:.55rem;vertical-align:.08em}
+.ft li .kit.home{background:var(--home)}.ft li .kit.away{background:var(--away)}
+.ft table{width:100%;border-collapse:collapse;font-size:14px}
+.ft th,.ft td{text-align:left;padding:.25rem .5rem .25rem 0;border-bottom:1px solid var(--rule)}
+.ft thead th{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.ft tbody th{font-weight:400;color:var(--muted)}
+.ft td{font:700 14px/1.3 var(--mono)}
+.ft td.home{color:var(--home-ink)}.ft td.away{color:var(--away-ink)}
+.ft p{font-size:14px;margin:.2rem 0 .5rem;max-width:60ch}
+.ft .story h3:not(:first-child){margin-top:1rem}
+@media (max-width:64rem){.ft .cols{grid-template-columns:minmax(0,1fr);gap:1.2rem}}
+@media (max-width:46rem){.ft{padding-left:1rem;padding-right:1rem}}
+
+/* ---------------------------------------------------------------- narrow screens */
+@media (max-width:72rem){.band{grid-template-columns:minmax(0,1fr);gap:1.4rem}.pitch-wrap{max-width:46rem}}
+/* Phone: each moment becomes a block; each viewer's line is labelled. */
+@media (max-width:46rem){
+  .mast{grid-template-columns:1fr auto;padding:.8rem 1rem}
+  .score{grid-column:1 / -1;grid-row:2;justify-content:space-between;width:100%;gap:.6rem}
+  .club{font-size:.95rem}.goals{font-size:1.7rem}
+  .mast-right{grid-row:1;grid-column:2}
+  .transport,.band,.log-wrap{padding-left:1rem;padding-right:1rem}
+  .log,.log tbody,.log tr,.log td{display:block;width:100%}
+  .log thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .log colgroup{display:none}
+  .log tr{border-bottom:1px solid var(--ink);padding:.6rem 0 .4rem}
+  .log tr.goal{border-top:2px solid var(--ink)}
+  .log tr.goal td{border-top:0}
+  .log td{border-bottom:0}
+  .log td.min{display:inline-block;width:auto;padding:0 .6rem 0 0}
+  .log td.moment{display:inline-block;width:auto;padding:0}
+  .log td.quiet{display:none}
+  .log td.cell::before{content:attr(data-label);display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:.55rem 0 0 .8rem}
+  .say{padding-top:.15rem}
+}
+
+/* ---------------------------------------------------------------- broadcast layer (2026-10-27)
+   The scorebug, condensed labels with a lime tick, and selected states in lime. */
+.mast{background:var(--sheet);border-bottom:3px solid var(--accent)}
+.wordmark{font:800 1.15rem/1 var(--cond);letter-spacing:.08em}
+.wordmark::before{content:"";display:inline-block;width:.55rem;height:.95rem;background:var(--accent);margin-right:.5rem;vertical-align:-.1rem}
+.score{background:var(--paper);padding:.25rem .3rem .25rem .9rem;border:1px solid var(--rule)}
+.club{font:700 1.2rem/1 var(--cond);text-transform:uppercase;letter-spacing:.05em}
+.goals{font:800 2.4rem/1 var(--cond);font-variant-numeric:tabular-nums;min-width:1.2ch;text-align:center}
+.clock{font:700 1.05rem/1 var(--cond);color:var(--paper);background:var(--accent);padding:.35rem .55rem;min-width:4ch}
+.lang button[aria-pressed="true"],.view button[aria-pressed="true"],.seg button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.view button,.seg button{font:600 15px/1.3 var(--cond);text-transform:uppercase;letter-spacing:.06em}
+.label,.log th,.shape-table th,.run-table th,.stats thead th,.ft h2,.ft h3,.dead h3,.drawer h4,.through-controls .tb-label{font-family:var(--cond);font-size:14px;font-weight:700;letter-spacing:.08em}
+.label::before{content:"";display:inline-block;width:.3rem;height:.8rem;background:var(--accent);margin-right:.45rem;vertical-align:-.05rem}
+.log th,.shape-table th,.run-table th,.stats thead th,.ft h3,.ev th{border-bottom-color:var(--rule-mid)}
+.log tr.goal td{border-top:2px solid var(--accent)}
+.win dd{font:800 2.6rem/1 var(--cond)}
+.checks dd{font:800 1.5rem/1 var(--cond)}
+.stats td,.ft td{font:700 16px/1.3 var(--cond)}
+.ft-banner .notice{font-family:var(--cond);font-size:2.8rem;font-weight:800;color:var(--accent)}
+.ft-banner .goals{font:800 4.4rem/1 var(--cond)}
+.zoom button[aria-pressed="true"]{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.drawer-inner{border-left:3px solid var(--accent)}
+.foot a,.gloss-link{color:var(--ink);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}
+.foot a:hover,.gloss-link:hover{color:var(--accent)}
+.stats th a{color:inherit;text-decoration:underline dotted;text-decoration-color:var(--rule-mid);text-underline-offset:3px}
+.stats th a:hover{color:var(--ink);text-decoration-color:var(--accent)}
+.gloss-nav{padding:0 1.6rem 1.4rem;font-size:14px}
+@media (max-width:46rem){.gloss-nav{padding:0 1rem 1.2rem}.score{padding-left:.5rem}}
+/* Player camera (cam.js): a 16:9 3D view under the key moments, with a broadcast lower third. */
+.cam{margin-top:.8rem;border:1px solid var(--rule-mid);border-top:3px solid var(--accent);background:var(--sheet)}
+.cam-head{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;flex-wrap:wrap}
+.cam-head .label{margin-right:auto}
+.cam-head .btn{font-size:13.5px;padding:.25rem .65rem}
+.cam-box{position:relative;line-height:0}
+#cam-canvas{display:block;width:100%;aspect-ratio:16/9;background:#0b0f1c;cursor:grab;touch-action:none}
+#cam-canvas.turning{cursor:grabbing}
+.cam-hud{position:absolute;left:.8rem;bottom:.8rem;line-height:1.2;margin:0;background:var(--paper);color:var(--ink);
+  border-left:4px solid var(--accent);padding:.35rem .7rem;font:700 15px/1.2 var(--cond);letter-spacing:.04em;text-transform:uppercase;pointer-events:none}
+.cam-hud:empty{display:none}
+.cam-hint{font-size:13px;color:var(--muted);padding:.5rem .7rem .65rem;max-width:65ch}
+.through-controls .cam-btn{font-size:13.5px;padding:.25rem .65rem;border-color:var(--accent)}
+/* Help for viewers (2026-10-27): "How to use this page", open on the first visit, and short hints. */
+.help-link{color:var(--muted);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px;margin-right:.6rem;font-size:15px}
+.help-link:hover{color:var(--ink)}
+.help{margin:.9rem 1.6rem 0;border:1px solid var(--rule-mid);border-left:4px solid var(--accent);background:var(--sheet)}
+.help summary{cursor:pointer;padding:.6rem .9rem;font:700 15px/1.3 var(--cond);text-transform:uppercase;letter-spacing:.08em;color:var(--ink)}
+.help summary:hover{background:var(--paper-2)}
+.help[open] summary{border-bottom:1px solid var(--rule)}
+.help-body{padding:.7rem .9rem 1rem}
+.help-intro{color:var(--muted);max-width:65ch;margin-bottom:.8rem}
+.help-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem 1.8rem}
+.help h3{font:700 14px/1.3 var(--cond);text-transform:uppercase;letter-spacing:.08em;color:var(--ink);margin-bottom:.35rem}
+.help h3::before{content:"";display:inline-block;width:.3rem;height:.75rem;background:var(--accent);margin-right:.45rem;vertical-align:-.03rem}
+.help ul{margin:0;padding-left:1.05rem}
+.help li{font-size:14px;line-height:1.45;margin:.25rem 0;max-width:60ch}
+.hint{font-size:13.5px;color:var(--muted);margin-top:.4rem;max-width:65ch}
+.hint:empty{display:none}
+.through-controls .hint.km{flex-basis:100%;margin-top:.1rem}
+.log-wrap > .hint{margin:1rem 0 0}
+@media (max-width:72rem){.help-cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:46rem){.help{margin:.7rem 1rem 0}.help-cols{grid-template-columns:minmax(0,1fr)}.help-link{display:none}}
+.mast-right{justify-self:end;display:flex;align-items:center;gap:1.1rem}
+/* The chart's hint sits right under the chart, then the pre-match line (fix 2026-10-27: they overlapped). */
+#chart-hint{margin:-1rem 0 .35rem}
+.pre{margin:0 0 1rem}
